@@ -16,7 +16,10 @@ class CoolingChannelSection(FlowComponent):
 
     @property
     def increase_mass_specific_enthalpy(self):
-        return self.heat_flow_rate / self.inlet_flow_state.mass_flow
+        if self.inlet_flow_state.mass_flow is not None:
+            return self.heat_flow_rate / self.inlet_flow_state.mass_flow
+        else:
+            raise ValueError("inlet_flow_state.mass_flow is None, cannot compute increase_mass_specific_enthalpy")
 
     @property
     def outlet_mass_specific_enthalpy(self):

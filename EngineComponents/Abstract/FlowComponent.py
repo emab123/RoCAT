@@ -45,6 +45,8 @@ class FlowComponent:
 
     @property
     def outlet_mass_flow(self):
+        if self.inlet_mass_flow is None or self.mass_flow_change is None:
+            return None
         return self.inlet_mass_flow + self.mass_flow_change
 
     @property

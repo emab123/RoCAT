@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 from EngineComponents.Abstract.FlowComponent import FlowComponent
 import CoolProp.CoolProp as CoolProp
 

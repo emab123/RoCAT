@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 from EngineComponents.Abstract.FlowState import FlowState
 
 
@@ -23,6 +22,8 @@ class Propellant:
 
     @property
     def mass(self):
+        if self.mass_flow is None or self.burn_time is None or self.margin_factor is None:
+            return 0  # or raise ValueError("One or more required values are None")
         return self.mass_flow * self.burn_time * self.margin_factor
 
     @property

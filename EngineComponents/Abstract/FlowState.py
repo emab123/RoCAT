@@ -29,7 +29,7 @@ class FlowState:
     def coolprop_name(self):
         p_name = self.propellant_name.upper()
 
-        def matches_any(patterns: list[str, ...]):
+        def matches_any(patterns: list[str]):
             return any(pattern in p_name for pattern in patterns)
 
         if matches_any(['RP', 'ROCKETPROPELLANT']):
@@ -162,9 +162,11 @@ class ManualFlowState(FlowState):
     @property
     def heat_capacity_ratio(self):
         if self._heat_capacity_ratio is None:
-            try:
-                return self.specific_heat_capacity / self.specific_heat_capacity_const_volume
-            except TypeError:
+            cp = self.specific_heat_capacity
+            cv = self.specific_heat_capacity_const_volume
+            if cp is not None and cv is not None:
+                return cp / cv
+            else:
                 return None
         else:
             return self._heat_capacity_ratio
