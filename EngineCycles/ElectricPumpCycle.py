@@ -1,6 +1,5 @@
 import warnings
 from dataclasses import dataclass, replace, field
-from typing import Optional
 from EngineCycles.Abstract.EngineCycle import EngineCycle
 from EngineComponents.Base.Pump import Pump
 from EngineComponents.Other.BatteryCooler import BatteryCooler
@@ -27,7 +26,7 @@ class ElectricPumpCycle(EngineCycle):
     electric_motor_magnet_temp_limit: float = 0
     electric_motor_ox_leak_factor: float = 0
     max_pump_inlet_temp_increase: float = 40
-    battery_coolant_specific_heat_capacity: Optional[float] = None  # J/(kg*K)
+    battery_coolant_specific_heat_capacity: float | None = None  # J/(kg*K)
 
     # Iteration attribute not required at init
     _iterative_battery_cooler_outlet_flow_state: FlowState = field(init=False, repr=False, default=DefaultFlowState())
@@ -59,7 +58,7 @@ class ElectricPumpCycle(EngineCycle):
         # Calculation of theoretical temperature difference between fuel tank outlet and fuel pump inlet
         m_fp = self.fuel_pump.inlet_flow_state.mass_flow
         m_bat_cl = self._iterative_battery_cooler_outlet_flow_state.mass_flow
-        a = m_bat_cl / m_fp
+        a = m_bat_cl / m_fp # type: ignore
         b = self.battery_coolant_temperature_change + self.fuel_pump.temperature_change
         dt_expected = a * b / (1 - a)  # Mathematical limit
         # Calculation of expected battery cooler outlet temperature
@@ -124,7 +123,7 @@ class ElectricPumpCycle(EngineCycle):
 
     @property
     def battery_cooler(self):
-        return BatteryCooler(inlet_flow_state=self.post_fuel_pump_splitter.outlet_flow_state_battery,
+        return BatteryCooler(inlet_flow_state=self.post_fuel_pump_splitter.outlet_flow_states['battery'],
                              outlet_pressure_required=self.fuel_tank.outlet_pressure,
                              coolant_allowable_temperature_change=self.battery_coolant_temperature_change,
                              coolant_specific_heat_capacity=self.battery_coolant_specific_heat_capacity,
