@@ -11,7 +11,8 @@ class Material:
     minimal_thickness: Optional[float] = None  # [m]
 
 
-Inconel600 = Material(yield_strength=1035e6, density=8470, poisson_ratio=.31, thermal_conductivity=585, minimal_thickness=0.5e-3)
+Inconel718 = Material(yield_strength=1200e6, density=8190, poisson_ratio=.29, thermal_conductivity=11.4, minimal_thickness=0.5e-3)
+Inconel600 = Material(yield_strength=1035e6, density=8470, poisson_ratio=.31, thermal_conductivity=14.9, minimal_thickness=0.5e-3)
 Ti6Al4V = Material(yield_strength=1170e6, density=4330, poisson_ratio=.31, thermal_conductivity=6.7, minimal_thickness=0.5e-3)
 Al2219 = Material(yield_strength=414e6, density=2840, poisson_ratio=.33, thermal_conductivity=120, minimal_thickness=0.5e-3)
 NarloyZ = Material(yield_strength=315e6, density=9130, poisson_ratio=.34, thermal_conductivity=350, minimal_thickness=0.5e-3)
