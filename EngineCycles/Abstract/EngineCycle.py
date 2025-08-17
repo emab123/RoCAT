@@ -76,37 +76,37 @@ class EngineCycle:
 
     is_frozen: bool = True
     # Values that override other inputs (one of them is required)
-    expansion_ratio: Optional[float] = None  # [-]
-    pressure_ratio: Optional[float] = None  # [-]
-    exit_pressure_forced: Optional[float] = None  # [Pa]
+    expansion_ratio: float | None = None  # [-]
+    pressure_ratio: float | None = None  # [-]
+    exit_pressure_forced: float | None = None  # [Pa]
 
     # Values that can be estimated or are not necessarily required
-    mass_mixture_ratio: Optional[float] = None  # [-]
-    specific_impulse_quality_factor: Optional[float] = None  # [-]
-    oxidizer_initial_temperature: Optional[float] = None  # [k]
-    fuel_initial_temperature: Optional[float] = None  # [K]
-    recovery_factor: Optional[float] = None  # [-]
-    area_ratio_chamber_throat: Optional[float] = None  # [-]
-    chamber_characteristic_length: Optional[float] = None  # [m]
-    expansion_ratio_start_cooling: Optional[float] = None
-    expansion_ratio_end_cooling: Optional[float] = None  # [-]
-    distance_from_throat_end_cooling: Optional[float] = None  # [m]
-    distance_from_throat_start_cooling: Optional[float] = None  # [m]
-    cooling_section_pressure_drop: Optional[float] = None  # [Pa]
-    injector_pressure_drop: Optional[float] = None  # [Pa]
-    ambient_pressure: Optional[float] = None  # [Pa]
-    fuel_pump_outlet_pressure_forced: Optional[float] = None  # [Pa]
-    oxidizer_pump_outlet_pressure_forced: Optional[float] = None  # [Pa]
+    mass_mixture_ratio: float | None = None  # [-]
+    specific_impulse_quality_factor: float | None = None  # [-]
+    oxidizer_initial_temperature: float | None = None  # [k]
+    fuel_initial_temperature: float | None = None  # [K]
+    recovery_factor: float | None = None  # [-]
+    area_ratio_chamber_throat: float | None = None  # [-]
+    chamber_characteristic_length: float | None = None  # [m]
+    expansion_ratio_start_cooling: float | None = None
+    expansion_ratio_end_cooling: float | None = None  # [-]
+    distance_from_throat_end_cooling: float | None = None  # [m]
+    distance_from_throat_start_cooling: float | None = None  # [m]
+    cooling_section_pressure_drop: float | None = None  # [Pa]
+    injector_pressure_drop: float | None = None  # [Pa]
+    ambient_pressure: float | None = None  # [Pa]
+    fuel_pump_outlet_pressure_forced: float | None = None  # [Pa]
+    oxidizer_pump_outlet_pressure_forced: float | None = None  # [Pa]
 
     # Values that can be estimated by CEA
-    characteristic_velocity: Optional[float] = None  # [m/s]
-    ideal_thrust_coefficient: Optional[float] = None  # [-]
-    combustion_temperature: Optional[float] = None  # [K]
-    cc_hot_gas_molar_mass: Optional[float] = None  # [kg/mol]
-    cc_hot_gas_heat_capacity_ratio: Optional[float] = None  # [-]
-    cc_hot_gas_dynamic_viscosity: Optional[float] = None  # [Pa*s]
-    cc_hot_gas_prandtl_number: Optional[float] = None  # [-]
-    cc_hot_gas_specific_heat_capacity: Optional[float] = None  # [J/(kg*K)]
+    characteristic_velocity: float | None = None  # [m/s]
+    ideal_thrust_coefficient: float | None = None  # [-]
+    combustion_temperature: float | None = None  # [K]
+    cc_hot_gas_molar_mass: float | None = None  # [kg/mol]
+    cc_hot_gas_heat_capacity_ratio: float | None = None  # [-]
+    cc_hot_gas_dynamic_viscosity: float | None = None  # [Pa*s]
+    cc_hot_gas_prandtl_number: float | None = None  # [-]
+    cc_hot_gas_specific_heat_capacity: float | None = None  # [J/(kg*K)]
 
     _oxidizer_pump_pressure_factor_first_guess: float = 1.15  # [Pa]
     _fuel_pump_pressure_factor_first_guess: float = 1.55  # [Pa]
@@ -117,11 +117,11 @@ class EngineCycle:
     # Values always calculated by program, but need to be saved as attributes, not properties
     heat_flow_rate: float = field(init=False, repr=False, default=0)
     minimum_required_coolant_mass_flow: float = field(init=False, repr=False, default=0)
-    _fuel_pump_outlet_pressure: float = field(init=False, repr=False, default=None)
-    _oxidizer_pump_outlet_pressure: float = field(init=False, repr=False, default=None)
-    _expansion_ratio_end_cooling: float = field(init=False, repr=False, default=None)
-    _cea_frozen: float = field(init=False, repr=False, default=None)
-    _cea_frozenAtThroat: float = field(init=False, repr=False, default=None)
+    _fuel_pump_outlet_pressure: float | None = field(init=False, repr=False, default=None)
+    _oxidizer_pump_outlet_pressure: float | None = field(init=False, repr=False, default=None)
+    _expansion_ratio_end_cooling: float | None = field(init=False, repr=False, default=None)
+    _cea_frozen: float | None = field(init=False, repr=False, default=None)
+    _cea_frozenAtThroat: float | None = field(init=False, repr=False, default=None)
     verbose: bool = True
     iterate: bool = True
 
@@ -151,13 +151,8 @@ class EngineCycle:
             self.mass_mixture_ratio = get_mass_mixture_ratio(
                 propellant_mix=self.propellant_mix
             )
-        self.resolve_expansion_choice()
-        self.set_cea()
-        if self.expansion_ratio is None:
-            self.expansion_ratio = get_expansion_ratio_from_p_ratio(self.pressure_ratio,
-                                                                    self.cc_hot_gas_heat_capacity_ratio)
-
-    def resolve_expansion_choice(self):
+        
+        # Resolve expansion ratio calculation options (from pressure ratio or forced exit pressure)
         if self.exit_pressure_forced is not None:
             if self.pressure_ratio is not None or self.expansion_ratio is not None:
                 raise ValueError(
@@ -166,12 +161,27 @@ class EngineCycle:
             self.pressure_ratio = self.combustion_chamber_pressure / self.exit_pressure_forced
         elif not ((self.pressure_ratio is None) ^ (self.expansion_ratio is None)):
             raise ValueError(
-                'Neither or both the pressure_ratio and expansion_ratio are given. Provide one and only one.'
+                'Error calculating expansion ratio: Neither or both the pressure_ratio and expansion_ratio are given. Provide one and only one.'
             )
-        elif self.pressure_ratio is None:
+        
+        # Get heat capacity ratio before setting CEA (needed for pressure ratio calculation)
+        if self.pressure_ratio is None and self.expansion_ratio is not None:
             self.cc_hot_gas_heat_capacity_ratio = self.get_heat_capacity_ratio()
             self.pressure_ratio = get_pressure_ratio_fsolve(self.expansion_ratio,
                                                             self.cc_hot_gas_heat_capacity_ratio)
+        
+        self.set_cea()
+        
+        # Calculate expansion ratio if not provided
+        if self.expansion_ratio is None:
+            # Both should be non-None at this point, but add safety checks
+            if self.pressure_ratio is None:
+                raise ValueError("Pressure ratio not available for expansion ratio calculation")
+            if self.cc_hot_gas_heat_capacity_ratio is None:
+                raise ValueError("Heat capacity ratio not available for expansion ratio calculation")
+            
+            self.expansion_ratio = get_expansion_ratio_from_p_ratio(self.pressure_ratio,
+                                                                    self.cc_hot_gas_heat_capacity_ratio)                                                 self.cc_hot_gas_heat_capacity_ratio)
 
     def set_initial_values(self):
         """Set missing input values."""
@@ -286,7 +296,7 @@ class EngineCycle:
             cea_name = self.cea_dict[attribute]
             setattr(self, attribute, cea_values[cea_name])
 
-    def get_heat_capacity_ratio(self):
+    def get_heat_capacity_ratio(self)-> float:
         # Get the heat_capacity_ratio only, to be able to estimate a pressure ratio, which is required for setting all
         # other CEA values
         kwargs = {key: value for key, value in self.cea_kwargs.items() if key not in ('eps', 'PcOvPe')}

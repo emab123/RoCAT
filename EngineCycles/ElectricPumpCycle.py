@@ -9,7 +9,7 @@ from EngineComponents.Base.Merger import Merger
 from EngineComponents.Base.Splitter import Splitter
 from EngineComponents.Abstract.FlowState import FlowState, DefaultFlowState
 
-@dataclass
+@dataclass(kw_only=True)
 class ElectricPumpCycle(EngineCycle):
     # TODO: dataclass inheritance is dumb, so all inherited classes can only have default variables if baseclass has any
     #  Solution is to update to 3.10 and use @dataclass(kw_only=True), probably not worth the hassle
@@ -84,6 +84,8 @@ class ElectricPumpCycle(EngineCycle):
 
     @property
     def post_fuel_pump_splitter(self):
+        if self.fuel_tank.outlet_mass_flow is None:
+            raise ValueError('Fuel tank outlet mass flow is \'None\', cannot create post fuel pump splitter')
         return Splitter(inlet_flow_state=self.fuel_pump.outlet_flow_state,
                         required_outlet_mass_flows=(self.fuel_tank.outlet_mass_flow,),
                         outlet_flow_names=('chamber', 'battery'))
