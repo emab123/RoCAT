@@ -16,7 +16,8 @@
                 "ms-python.pylint",
                 "ms-python.black-formatter",
                 "ms-toolsai.jupyter",
-                "ms-vscode-remote.remote-containers"
+                "ms-vscode-remote.remote-containers",
+                "vivaxy.vscode-conventional-commits"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "./.venv/bin/python",
