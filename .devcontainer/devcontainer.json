@@ -8,7 +8,7 @@
             "installOhMyZsh": true
         }
     },
-    "postCreateCommand": "sudo apt-get update && sudo apt-get install -y gfortran && python -m venv .venv && .venv/bin/pip install --upgrade pip && .venv/bin/pip install -r requirements.txt",
+    "postCreateCommand": "bash .devcontainer/setup.sh",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -16,13 +16,19 @@
                 "ms-python.pylint",
                 "ms-python.black-formatter",
                 "ms-toolsai.jupyter",
-                "ms-vscode-remote.remote-containers",
                 "vivaxy.vscode-conventional-commits"
             ],
             "settings": {
-                "python.defaultInterpreterPath": "./.venv/bin/python",
-                "python.terminal.activateEnvironment": true,
-                "python.formatting.provider": "black"
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.terminal.activateEnvironment": false,
+                "python.formatting.provider": "black",
+                "python.analysis.autoImportCompletions": true,
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "files.exclude": {
+                    "**/__pycache__": true,
+                    "**/.pytest_cache": true
+                }
             }
         }
     },
