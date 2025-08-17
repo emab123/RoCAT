@@ -2,7 +2,6 @@ import warnings
 from dataclasses import dataclass, field
 from functools import cached_property
 from math import log, exp
-from typing import Optional
 from CoolProp import CoolProp
 
 from scipy import constants as constants
@@ -151,7 +150,7 @@ class EngineCycle:
             self.mass_mixture_ratio = get_mass_mixture_ratio(
                 propellant_mix=self.propellant_mix
             )
-        
+
         # Resolve expansion ratio calculation options (from pressure ratio or forced exit pressure)
         if self.exit_pressure_forced is not None:
             if self.pressure_ratio is not None or self.expansion_ratio is not None:
@@ -163,15 +162,15 @@ class EngineCycle:
             raise ValueError(
                 'Error calculating expansion ratio: Neither or both the pressure_ratio and expansion_ratio are given. Provide one and only one.'
             )
-        
+
         # Get heat capacity ratio before setting CEA (needed for pressure ratio calculation)
         if self.pressure_ratio is None and self.expansion_ratio is not None:
             self.cc_hot_gas_heat_capacity_ratio = self.get_heat_capacity_ratio()
             self.pressure_ratio = get_pressure_ratio_fsolve(self.expansion_ratio,
                                                             self.cc_hot_gas_heat_capacity_ratio)
-        
+
         self.set_cea()
-        
+
         # Calculate expansion ratio if not provided
         if self.expansion_ratio is None:
             # Both should be non-None at this point, but add safety checks
@@ -179,7 +178,7 @@ class EngineCycle:
                 raise ValueError("Pressure ratio not available for expansion ratio calculation")
             if self.cc_hot_gas_heat_capacity_ratio is None:
                 raise ValueError("Heat capacity ratio not available for expansion ratio calculation")
-            
+
             self.expansion_ratio = get_expansion_ratio_from_p_ratio(self.pressure_ratio,
                                                                     self.cc_hot_gas_heat_capacity_ratio)                                                 self.cc_hot_gas_heat_capacity_ratio)
 
