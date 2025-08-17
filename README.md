@@ -8,6 +8,42 @@ The tool provides detailed thermodynamic analysis of various rocket engine cycle
 
 This fork is being developed as part of the RAPID initiative at UFSC, focusing on creating cost-effective rocket propulsion systems with innovative propellant injection designs. The modifications and enhancements made to the original RoCAT codebase are tailored to support the specific research objectives and design requirements of the RAPID project.
 
+## Development Setup
+
+This project uses **Dev Containers** for a consistent development environment across all platforms.
+
+### Prerequisites
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
+
+### Setup Instructions
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd RoCAT
+   ```
+
+2. Open in VS Code:
+   ```bash
+   code .
+   ```
+
+3. When prompted, click **"Reopen in Container"** or:
+   - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
+   - Type "Dev Containers: Reopen in Container"
+   - Press Enter
+
+4. Wait for the container to build (first time only - takes a few minutes)
+
+5. Once complete, you'll have a fully configured development environment with:
+   - Python 3.12 with virtual environment
+   - All dependencies installed (including gfortran)
+   - VS Code extensions pre-installed
+   - Proper Python interpreter configured
+
+That's it! Your development environment is ready to use.
+
 ## Development Guidelines
 
 This project uses **Conventional Commits** to maintain a clean and meaningful commit history. The Dev Container automatically includes the "Conventional Commits" VS Code extension to help you format commit messages properly.
@@ -52,42 +88,6 @@ including convective and radiative heat transfer models.
 fix(cea): resolve pressure ratio calculation error
 ```
 
-## Development Setup
-
-This project uses **Dev Containers** for a consistent development environment across all platforms.
-
-### Prerequisites
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for VS Code
-
-### Setup Instructions
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd RoCAT
-   ```
-
-2. Open in VS Code:
-   ```bash
-   code .
-   ```
-
-3. When prompted, click **"Reopen in Container"** or:
-   - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-   - Type "Dev Containers: Reopen in Container"
-   - Press Enter
-
-4. Wait for the container to build (first time only - takes a few minutes)
-
-5. Once complete, you'll have a fully configured development environment with:
-   - Python 3.12 with virtual environment
-   - All dependencies installed (including gfortran)
-   - VS Code extensions pre-installed
-   - Proper Python interpreter configured
-
-That's it! Your development environment is ready to use.
-
 ## Prerequisites
 
 This project uses Dev Containers, so you only need:
@@ -110,7 +110,7 @@ Installation is handled automatically by the Dev Container. Simply follow the De
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feat/amazing-feature`)
-3. Make your changes following the Conventional Commits format
+3. Make your changes following the [Development Guidelines](#development-guidelines)
 4. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 5. Push to the branch (`git push origin feat/amazing-feature`)
 6. Open a Pull Request
