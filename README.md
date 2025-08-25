@@ -20,7 +20,7 @@ This project uses **Dev Containers** for a consistent development environment ac
 ### Setup Instructions
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/emab123/RoCAT.git
    cd RoCAT
    ```
 
