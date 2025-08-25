@@ -121,5 +121,5 @@ Installation is handled automatically by the Dev Container. Simply follow the De
 
 ## Acknowledgments
 
-- Original RoCAT developer @RubenvdBerg
+- Original RoCAT developer [@RubenvdBerg](https://github.com/RubenvdBerg)
 - UFSC RAPID project team
